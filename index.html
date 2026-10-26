@@ -147,6 +147,56 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
+
+
+
+
+
+        // تشغيل المؤقت (Timer)
+let timerInterval;
+let timeLeft = 25 * 60;
+const timerDisplay = document.querySelector('.text-5xl');
+const startBtn = document.querySelector('.bg-green-500');
+
+startBtn.addEventListener('click', () => {
+    if(startBtn.innerText === 'Start') {
+        startBtn.innerText = 'Pause';
+        startBtn.classList.replace('bg-green-500', 'bg-yellow-500');
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            let s = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.innerText = `${m}:${s}`;
+            if(timeLeft <= 0) clearInterval(timerInterval);
+        }, 1000);
+    } else {
+        startBtn.innerText = 'Start';
+        startBtn.classList.replace('bg-yellow-500', 'bg-green-500');
+        clearInterval(timerInterval);
+    }
+});
+
+// إضافة مهام جديدة (Add Task)
+const taskInput = document.querySelector('input[type="text"]');
+const addBtn = document.querySelector('button:contains("+ Add to Me")'); // تحديد الزر
+const myTasksList = document.querySelector('.glass:nth-child(1) .space-y-3');
+
+document.querySelectorAll('button').forEach(btn => {
+    if(btn.innerText.includes('Add to Me')) {
+        btn.addEventListener('click', () => {
+            if(!taskInput.value) return;
+            const newTask = document.createElement('div');
+            newTask.className = 'bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm';
+            newTask.innerHTML = `
+                <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-blue-500">
+                <span class="flex-1 text-gray-800 font-semibold break-words">${taskInput.value}</span>
+                <span class="text-xs font-bold text-blue-500">+10p</span>
+            `;
+            myTasksList.prepend(newTask);
+            taskInput.value = '';
+        });
+    }
+});
         
         console.log("Firebase config section is ready. Please uncomment and add your details before deploying.");
     </script>
