@@ -74,24 +74,15 @@
                 </div>
                 <!-- Input Area -->
                 <div class="flex gap-2 mb-4">
-                    <input type="text" placeholder="What needs to be done?..." class="flex-1 p-3 rounded-lg border-0 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/70">
+                    <input id="taskInput" type="text" placeholder="What needs to be done?..." class="flex-1 p-3 rounded-lg border-0 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/70">
                 </div>
                 <div class="flex gap-2 mb-4">
-                    <button class="flex-1 bg-gray-800 text-white p-2 rounded-lg hover:bg-gray-900 transition shadow-md font-bold text-sm">+ Add to Me (10p)</button>
-                    <button class="flex-1 bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition shadow-md font-bold text-sm">🎯 Send Bounty (50p)</button>
+                    <button id="addMeBtn" class="flex-1 bg-gray-800 text-white p-2 rounded-lg hover:bg-gray-900 transition shadow-md font-bold text-sm">+ Add to Me (10p)</button>
+                    <button id="addBountyBtn" class="flex-1 bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition shadow-md font-bold text-sm">🎯 Send Bounty (50p)</button>
                 </div>
                 <!-- My Tasks List -->
-                <div class="space-y-3">
-                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm">
-                        <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-blue-500">
-                        <span class="flex-1 text-gray-800 font-semibold break-words">Read chapter 4 completely and take notes.</span>
-                        <span class="text-xs font-bold text-blue-500">+10p</span>
-                    </div>
-                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm opacity-50">
-                        <input type="checkbox" checked class="w-5 h-5 mt-1 cursor-pointer accent-blue-500">
-                        <span class="flex-1 text-gray-800 font-semibold break-words line-through">Review previous notes</span>
-                        <span class="text-xs font-bold text-blue-500">+10p</span>
-                    </div>
+                <div id="myTasksList" class="space-y-3">
+                    <!-- Tasks will load here automatically -->
                 </div>
             </div>
 
@@ -105,16 +96,8 @@
                     </div>
                 </div>
                 <!-- Peer Tasks List -->
-                <div class="space-y-3">
-                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm border-r-4 border-yellow-400">
-                        <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-purple-500 pointer-events-none opacity-60">
-                        <span class="flex-1 text-gray-800 font-semibold break-words">Bounty: Finish the assignment! 🎯</span>
-                        <span class="text-xs font-bold text-yellow-600">+50p</span>
-                    </div>
-                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm">
-                        <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-purple-500 pointer-events-none opacity-60">
-                        <span class="flex-1 text-gray-800 font-semibold break-words">VeryLongWordWithoutSpacesTestingTheBreakWordsClassToSeeIfItWorksProperly</span>
-                    </div>
+                <div id="peerTasksList" class="space-y-3">
+                     <!-- Peer tasks will load here automatically -->
                 </div>
             </div>
             
@@ -123,82 +106,138 @@
     
     <!-- Scripts & Firebase setup instructions -->
     <script type="module">
-        // ==========================================
-        // 1. ADD YOUR FIREBASE CONFIGURATION HERE
-        // ==========================================
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
+        // 1. استدعاء Firebase عبر الروابط الصحيحة للمواقع الثابتة
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // إعدادات مشروعك
         const firebaseConfig = {
-        apiKey: "AIzaSyA3oQpYm4NLM74D4ETEGSqLrDm4UomkAM4",
-        authDomain: "study-workspace-93908.firebaseapp.com",
-        projectId: "study-workspace-93908",
-        storageBucket: "study-workspace-93908.firebasestorage.app",
-        messagingSenderId: "206893022313",
-        appId: "1:206893022313:web:c1f4d1589d9f8eddba76f8",
-        measurementId: "G-3394PFJRLY"
+            apiKey: "AIzaSyA3oQpYm4NLM74D4ETEGSqLrDm4UomkAM4",
+            authDomain: "study-workspace-93908.firebaseapp.com",
+            projectId: "study-workspace-93908",
+            storageBucket: "study-workspace-93908.firebasestorage.app",
+            messagingSenderId: "206893022313",
+            appId: "1:206893022313:web:c1f4d1589d9f8eddba76f8"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const tasksRef = ref(db, 'tasks');
 
-
-
-
+        // إنشاء ID فريد لكل مستخدم لتمييز جهازه
+        let myId = localStorage.getItem('userId');
+        if (!myId) {
+            myId = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('userId', myId);
+        }
 
         // تشغيل المؤقت (Timer)
-let timerInterval;
-let timeLeft = 25 * 60;
-const timerDisplay = document.querySelector('.text-5xl');
-const startBtn = document.querySelector('.bg-green-500');
+        let timerInterval;
+        let timeLeft = 25 * 60;
+        const timerDisplay = document.querySelector('.text-5xl');
+        const startBtn = document.querySelector('.bg-green-500');
 
-startBtn.addEventListener('click', () => {
-    if(startBtn.innerText === 'Start') {
-        startBtn.innerText = 'Pause';
-        startBtn.classList.replace('bg-green-500', 'bg-yellow-500');
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            let s = (timeLeft % 60).toString().padStart(2, '0');
-            timerDisplay.innerText = `${m}:${s}`;
-            if(timeLeft <= 0) clearInterval(timerInterval);
-        }, 1000);
-    } else {
-        startBtn.innerText = 'Start';
-        startBtn.classList.replace('bg-yellow-500', 'bg-green-500');
-        clearInterval(timerInterval);
-    }
-});
+        startBtn.addEventListener('click', () => {
+            if(startBtn.innerText === 'Start') {
+                startBtn.innerText = 'Pause';
+                startBtn.classList.replace('bg-green-500', 'bg-yellow-500');
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                    let s = (timeLeft % 60).toString().padStart(2, '0');
+                    timerDisplay.innerText = `${m}:${s}`;
+                    if(timeLeft <= 0) clearInterval(timerInterval);
+                }, 1000);
+            } else {
+                startBtn.innerText = 'Start';
+                startBtn.classList.replace('bg-yellow-500', 'bg-green-500');
+                clearInterval(timerInterval);
+            }
+        });
 
-// إضافة مهام جديدة (Add Task)
-const taskInput = document.querySelector('input[type="text"]');
-const addBtn = document.querySelector('button:contains("+ Add to Me")'); // تحديد الزر
-const myTasksList = document.querySelector('.glass:nth-child(1) .space-y-3');
+        // تعريف أماكن إدخال وعرض المهام
+        const taskInput = document.getElementById('taskInput');
+        const addMeBtn = document.getElementById('addMeBtn');
+        const addBountyBtn = document.getElementById('addBountyBtn');
+        const myTasksList = document.getElementById('myTasksList');
+        const peerTasksList = document.getElementById('peerTasksList');
 
-document.querySelectorAll('button').forEach(btn => {
-    if(btn.innerText.includes('Add to Me')) {
-        btn.addEventListener('click', () => {
-            if(!taskInput.value) return;
-            const newTask = document.createElement('div');
-            newTask.className = 'bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm';
-            newTask.innerHTML = `
-                <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-blue-500">
-                <span class="flex-1 text-gray-800 font-semibold break-words">${taskInput.value}</span>
-                <span class="text-xs font-bold text-blue-500">+10p</span>
-            `;
-            myTasksList.prepend(newTask);
+        // إضافة مهمة عادية لنفسي
+        addMeBtn.addEventListener('click', () => {
+            if(!taskInput.value.trim()) return;
+            push(tasksRef, {
+                text: taskInput.value,
+                sender: myId,
+                type: 'normal',
+                timestamp: Date.now()
+            });
             taskInput.value = '';
         });
-    }
-});
-        
-        console.log("Firebase config section is ready. Please uncomment and add your details before deploying.");
+
+        // إضافة مهمة كـ "تحدي / Bounty" للطرف التاني
+        addBountyBtn.addEventListener('click', () => {
+            if(!taskInput.value.trim()) return;
+            push(tasksRef, {
+                text: taskInput.value,
+                sender: myId,
+                type: 'bounty',
+                timestamp: Date.now()
+            });
+            taskInput.value = '';
+        });
+
+        // قراءة المهام لحظياً من قاعدة البيانات وتوزيعها على الشاشتين
+        onValue(tasksRef, (snapshot) => {
+            myTasksList.innerHTML = '';
+            peerTasksList.innerHTML = '';
+            
+            const tasksArray = [];
+            snapshot.forEach((childSnapshot) => {
+                tasksArray.push(childSnapshot.val());
+            });
+
+            // ترتيب المهام من الأحدث للأقدم
+            tasksArray.sort((a, b) => b.timestamp - a.timestamp);
+
+            tasksArray.forEach((task) => {
+                let taskHtml = '';
+                
+                if(task.type === 'bounty') {
+                    // شكل المهمة التحدي (Bounty)
+                    taskHtml = `
+                        <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm border-r-4 border-yellow-400 mb-2">
+                            <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-purple-500">
+                            <span class="flex-1 text-gray-800 font-semibold break-words">🎯 Bounty: ${task.text}</span>
+                            <span class="text-xs font-bold text-yellow-600">+50p</span>
+                        </div>
+                    `;
+                } else {
+                    // شكل المهمة العادية
+                    taskHtml = `
+                        <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm mb-2">
+                            <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-blue-500">
+                            <span class="flex-1 text-gray-800 font-semibold break-words">${task.text}</span>
+                            <span class="text-xs font-bold text-blue-500">+10p</span>
+                        </div>
+                    `;
+                }
+                
+                // توزيع المهام بيني وبين شاشة زميلي بناءً على نوع المهمة ومين اللي بعتها
+                if (task.sender === myId) {
+                    if (task.type === 'bounty') {
+                        peerTasksList.innerHTML += taskHtml; 
+                    } else {
+                        myTasksList.innerHTML += taskHtml; 
+                    }
+                } else {
+                    if (task.type === 'bounty') {
+                        myTasksList.innerHTML += taskHtml; 
+                    } else {
+                        peerTasksList.innerHTML += taskHtml;
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
