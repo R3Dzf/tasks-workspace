@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamified Workspace Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass { 
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+        }
+        body { 
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); 
+            min-height: 100vh; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        /* CSS to fix text overflow */
+        .break-words { 
+            word-break: break-all; 
+            overflow-wrap: break-word; 
+        }
+        /* Shake animation for Nudge */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Navbar -->
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="glass p-4 rounded-xl shadow-lg flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">TaskSync Workspace</h1>
+            <div class="flex gap-3">
+                <button class="bg-white/50 px-4 py-2 rounded-lg hover:bg-white/80 transition text-sm font-bold shadow-sm">📅 View History</button>
+                <button class="bg-red-400 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition text-sm font-bold shadow-sm">Logout</button>
+            </div>
+        </div>
+        
+        <!-- Dual Timers Section -->
+        <div class="glass p-6 rounded-xl shadow-lg text-center relative overflow-hidden">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Focus Timer</h2>
+            <div class="flex justify-center gap-4 mb-4">
+                <button class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition shadow-md">Solo Focus</button>
+                <button class="bg-purple-500 text-white px-6 py-2 rounded-full hover:bg-purple-600 transition shadow-md">Study With Me</button>
+            </div>
+            <div class="text-5xl font-mono font-bold text-gray-800 my-4">25:00</div>
+            <p class="text-sm text-gray-600 mb-4 font-bold">Total Focus Time: <span class="text-blue-600">2 Hrs 15 Mins</span></p>
+            <button class="bg-green-500 text-white px-10 py-3 rounded-xl font-bold hover:bg-green-600 transition shadow-md text-lg">Start</button>
+        </div>
+
+        <!-- Workspaces (Mobile Responsive Grid) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- My Workspace -->
+            <div class="glass p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">My Workspace <span title="High Score">👑</span><span title="3 Days Streak">🔥</span></h2>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold shadow-sm">Score: 120 pts</span>
+                </div>
+                <!-- Input Area -->
+                <div class="flex gap-2 mb-4">
+                    <input type="text" placeholder="What needs to be done?..." class="flex-1 p-3 rounded-lg border-0 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/70">
+                </div>
+                <div class="flex gap-2 mb-4">
+                    <button class="flex-1 bg-gray-800 text-white p-2 rounded-lg hover:bg-gray-900 transition shadow-md font-bold text-sm">+ Add to Me (10p)</button>
+                    <button class="flex-1 bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition shadow-md font-bold text-sm">🎯 Send Bounty (50p)</button>
+                </div>
+                <!-- My Tasks List -->
+                <div class="space-y-3">
+                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm">
+                        <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-blue-500">
+                        <span class="flex-1 text-gray-800 font-semibold break-words">Read chapter 4 completely and take notes.</span>
+                        <span class="text-xs font-bold text-blue-500">+10p</span>
+                    </div>
+                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm opacity-50">
+                        <input type="checkbox" checked class="w-5 h-5 mt-1 cursor-pointer accent-blue-500">
+                        <span class="flex-1 text-gray-800 font-semibold break-words line-through">Review previous notes</span>
+                        <span class="text-xs font-bold text-blue-500">+10p</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peer Workspace -->
+            <div class="glass p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Peer Workspace</h2>
+                    <div class="flex items-center gap-2">
+                        <button class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm hover:bg-red-200 transition" title="Nudge Peer">🔔 Nudge</button>
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-bold shadow-sm">Score: 90 pts</span>
+                    </div>
+                </div>
+                <!-- Peer Tasks List -->
+                <div class="space-y-3">
+                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm border-r-4 border-yellow-400">
+                        <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-purple-500 pointer-events-none opacity-60">
+                        <span class="flex-1 text-gray-800 font-semibold break-words">Bounty: Finish the assignment! 🎯</span>
+                        <span class="text-xs font-bold text-yellow-600">+50p</span>
+                    </div>
+                    <div class="bg-white/80 p-3 rounded-lg flex items-start gap-3 shadow-sm">
+                        <input type="checkbox" class="w-5 h-5 mt-1 cursor-pointer accent-purple-500 pointer-events-none opacity-60">
+                        <span class="flex-1 text-gray-800 font-semibold break-words">VeryLongWordWithoutSpacesTestingTheBreakWordsClassToSeeIfItWorksProperly</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Scripts & Firebase setup instructions -->
+    <script type="module">
+        // ==========================================
+        // 1. ADD YOUR FIREBASE CONFIGURATION HERE
+        // ==========================================
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "firebase/app";
+        import { getAnalytics } from "firebase/analytics";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+        apiKey: "AIzaSyA3oQpYm4NLM74D4ETEGSqLrDm4UomkAM4",
+        authDomain: "study-workspace-93908.firebaseapp.com",
+        projectId: "study-workspace-93908",
+        storageBucket: "study-workspace-93908.firebasestorage.app",
+        messagingSenderId: "206893022313",
+        appId: "1:206893022313:web:c1f4d1589d9f8eddba76f8",
+        measurementId: "G-3394PFJRLY"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        
+        console.log("Firebase config section is ready. Please uncomment and add your details before deploying.");
+    </script>
+</body>
+</html>
